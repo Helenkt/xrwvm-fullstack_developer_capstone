@@ -3,8 +3,8 @@ services:
     name: best-cars-dealership
     env: python
     rootDir: server
-    buildCommand: ./build.sh
-    startCommand: ./start.sh
+    buildCommand: bash build.sh
+    startCommand: bash start.sh
     envVars:
       - key: PYTHON_VERSION
         value: 3.12.6
