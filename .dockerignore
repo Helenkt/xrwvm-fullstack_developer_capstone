@@ -1,0 +1,8 @@
+.git
+server/.venv
+server/db.sqlite3
+server/staticfiles
+server/static
+node_modules
+__pycache__
+*.pyc
