@@ -48,9 +48,8 @@ def login_user(request):
 
 
 def logout_request(request):
-    username = request.user.username if request.user.is_authenticated else ""
     logout(request)
-    return JsonResponse({"userName": username, "status": "Logged out"})
+    return JsonResponse({"userName": "", "status": "Logged out"})
 
 
 @csrf_exempt
@@ -80,12 +79,29 @@ def registration(request):
     })
 
 
+def _dealer_api_payload(dealer):
+    return {
+        "id": dealer["id"],
+        "city": dealer["city"],
+        "state": dealer.get("st", dealer["state"]),
+        "address": dealer["address"],
+        "zip": dealer["zip"],
+        "lat": dealer["lat"],
+        "long": dealer["long"],
+        "short_name": dealer["short_name"],
+        "full_name": dealer["full_name"],
+    }
+
+
 def get_dealerships(request, state="All"):
     if state and state.lower() != "all":
-        dealers = [dealer for dealer in DEALERS if dealer["state"].lower() == state.lower()]
+        dealers = [
+            dealer for dealer in DEALERS
+            if dealer["state"].lower() == state.lower() or dealer.get("st", "").lower() == state.lower()
+        ]
     else:
         dealers = DEALERS
-    return JsonResponse({"status": 200, "dealers": dealers})
+    return JsonResponse({"status": 200, "dealers": [_dealer_api_payload(dealer) for dealer in dealers]})
 
 
 def get_dealer_reviews(request, dealer_id):
@@ -97,7 +113,7 @@ def get_dealer_reviews(request, dealer_id):
 
 def get_dealer_details(request, dealer_id):
     dealer = [dealer for dealer in DEALERS if int(dealer["id"]) == int(dealer_id)]
-    return JsonResponse({"status": 200, "dealer": dealer})
+    return JsonResponse({"status": 200, "dealer": [_dealer_api_payload(item) for item in dealer]})
 
 
 @csrf_exempt
